@@ -1,7 +1,8 @@
 package rest
 
 import (
-	"github.com/Sirupsen/logrus"
+    "github.com/Sirupsen/logrus"
+	"github.com/femaref/helper"
 	"github.com/femaref/toJson"
 	"net/http"
 
@@ -9,8 +10,6 @@ import (
 
 	"runtime"
 )
-
-var Logger *logrus.Logger
 
 func callerInfo() (string, string, string, error) {
 
@@ -35,13 +34,13 @@ func callerInfo() (string, string, string, error) {
 
 func ShowError(w http.ResponseWriter, err error, code int) bool {
 	if err != nil {
-	    if Logger != nil {
+	    if helper.Logger != nil {
     		fname, fpath, fline, ferr := callerInfo()
 
             if ferr != nil {
-                Logger.WithFields(logrus.Fields{}).Error(ferr)
+                helper.Logger.WithFields(logrus.Fields{}).Error(ferr)
             } else {
-                Logger.WithFields(logrus.Fields{"func": fname, "path": fpath, "line": fline}).Error(err)
+                helper.Logger.WithFields(logrus.Fields{"func": fname, "path": fpath, "line": fline}).Error(err)
             }
 		}
 
@@ -52,8 +51,8 @@ func ShowError(w http.ResponseWriter, err error, code int) bool {
 			if err == nil {
 			    return true
 			}
-			if Logger != nil {
-    			Logger.WithFields(logrus.Fields{}).Error(err)
+			if helper.Logger != nil {
+    			helper.Logger.WithFields(logrus.Fields{}).Error(err)
 			}
 			
 		}
