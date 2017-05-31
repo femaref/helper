@@ -33,35 +33,34 @@ func callerInfo() (string, string, string, error) {
 }
 
 func ShowError(w http.ResponseWriter, err error, code int) bool {
-	if err != nil {
-	    if helper.Logger != nil {
-    		fname, fpath, fline, ferr := callerInfo()
+    if err == nil {
+        return false
+    }
+    
+    if helper.Logger != nil {
+        fname, fpath, fline, ferr := callerInfo()
 
-            if ferr != nil {
-                helper.Logger.WithFields(logrus.Fields{}).Error(ferr)
-            } else {
-                helper.Logger.WithFields(logrus.Fields{"func": fname, "path": fpath, "line": fline}).Error(err)
+        if ferr != nil {
+            helper.Logger.WithFields(logrus.Fields{}).Error(ferr)
+        } else {
+            helper.Logger.WithFields(logrus.Fields{"func": fname, "path": fpath, "line": fline}).Error(err)
+        }
+    }
+
+    w.Header().Set("Content-Type", "application/json")       
+    w.WriteHeader(code)
+    if writer, ok := err.(toJson.JsonWriter); ok {
+        err := toJson.WriteToJson(w, writer)
+        if err != nil {
+            if helper.Logger != nil {
+                helper.Logger.WithFields(logrus.Fields{}).Error(err)
             }
-		}
+        }        
+    } else {
+        toJson.WriteToJson(w, struct{ Text string }{err.Error()})
+    }
 
-		w.WriteHeader(code)
-		
-		if writer, ok := err.(toJson.JsonWriter); ok {
-			err := toJson.WriteToJson(w, writer)
-			if err == nil {
-			    return true
-			}
-			if helper.Logger != nil {
-    			helper.Logger.WithFields(logrus.Fields{}).Error(err)
-			}
-			
-		}
-
-    	toJson.WriteToJson(w, struct{ Text string }{err.Error()})
-		return true
-	}
-
-	return false
+    return true
 
 }
 
