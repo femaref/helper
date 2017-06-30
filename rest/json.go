@@ -8,6 +8,9 @@ import (
 	"io"
 	"io/ioutil"
     log "github.com/femaref/helper"
+    "mime"
+    "errors"
+    "net/http"
 )
 
 
@@ -47,4 +50,25 @@ func EnsureUnmarshal(buffer io.ReadCloser, target interface{}, required []string
 
 	err = Unmarshal(copy, &target)
 	return err
+}
+
+// ensure we get json data in the request
+func EnsureJsonMime(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" || r.Method == "PUT" {
+			content_type := r.Header.Get("Content-Type")
+			if content_type == "" {
+				ShowError(w, errors.New("Empty Content-Type"), 400)
+				return
+			}
+
+			mediatype, _, err := mime.ParseMediaType(content_type)
+
+			if err != nil || mediatype != "application/json" {
+				ShowError(w, errors.New("Invalid Content-Type"), 400)
+				return
+			}
+		}
+		next.ServeHTTP(w, r)
+	})
 }
