@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 )
 
+var InvalidTypeError = errors.New("Provided value type didn't match obj field type")
+
 func setField(obj interface{}, name string, value interface{}) error {
 	structValue := reflect.ValueOf(obj).Elem()
 	structFieldValue := structValue.FieldByName(name)
@@ -21,8 +23,11 @@ func setField(obj interface{}, name string, value interface{}) error {
 	structFieldType := structFieldValue.Type()
 	val := reflect.ValueOf(value)
 	if structFieldType != val.Type() {
-		invalidTypeError := errors.New("Provided value type didn't match obj field type")
-		return invalidTypeError
+        if !val.Type().ConvertibleTo(structFieldType) {
+    		return InvalidTypeError
+        }
+
+        val = val.Convert(structFieldType)
 	}
 
 	structFieldValue.Set(val)
