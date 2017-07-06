@@ -52,3 +52,13 @@ func StructToMap(s interface{}) (map[string]interface{}, error) {
 
     return unmarsh, err
 }
+
+func MustStructToMap(s interface{}) map[string]interface{} {
+    m, err := StructToMap(s)
+
+    if err != nil {
+        panic(err)
+    }
+
+    return m
+}
