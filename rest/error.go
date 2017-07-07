@@ -1,7 +1,7 @@
 package rest
 
 import (
-    "github.com/Sirupsen/logrus"
+    "github.com/sirupsen/logrus"
 	"github.com/femaref/helper"
 	"github.com/femaref/toJson"
 	"net/http"

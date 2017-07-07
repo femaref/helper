@@ -1,7 +1,7 @@
 package helper
 
 import (
-    "github.com/Sirupsen/logrus"
+    "github.com/sirupsen/logrus"
 )
 
 var Logger *logrus.Logger
