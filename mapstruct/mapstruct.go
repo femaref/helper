@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"encoding/json"
 	"github.com/chuckpreslar/inflect"
+	"strings"
 )
 
 var InvalidTypeError = errors.New("Provided value type didn't match obj field type")
@@ -50,10 +51,13 @@ func MapToStruct(s interface{}, m map[string]interface{}) error {
 func name(t reflect.StructField) string {
 	tag := t.Tag
 
-	value := tag.Get("ms")
+	value := tag.Get("json")
 
 	if value != "" {
-		return value
+	    arr := strings.Split(value, ",")
+	    if arr[0] != "" {
+    		return value
+    	}
 	}
 
 	return inflect.Underscore(t.Name)
