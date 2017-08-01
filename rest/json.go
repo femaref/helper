@@ -23,6 +23,10 @@ func Unmarshal(buffer io.ReadCloser, target interface{}) error {
 	return json.Unmarshal(all, target)
 }
 
+func EnsureUnmarshalBuffer(buffer []byte, target interface{}, required []string) error {
+	return EnsureUnmarshal(ioutil.NopCloser(bytes.NewBuffer(buf)), target, required)
+}
+
 func EnsureUnmarshal(buffer io.ReadCloser, target interface{}, required []string) error {
 	var copy, original io.ReadCloser
 	var err error
