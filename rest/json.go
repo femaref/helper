@@ -15,7 +15,12 @@ import (
 
 
 func Unmarshal(buffer io.ReadCloser, target interface{}) error {
-	return json.NewDecoder(buffer).Decode(target)
+	all, err := ioutil.ReadAll(buffer)
+
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(all, target)
 }
 
 func EnsureUnmarshal(buffer io.ReadCloser, target interface{}, required []string) error {
