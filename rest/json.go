@@ -51,10 +51,12 @@ func EnsureUnmarshal(buffer io.ReadCloser, target interface{}, required []string
 
 	fname, fpath, fline, ferr := callerInfo()
 
-	if ferr != nil {
-		log.Logger.WithFields(logrus.Fields{}).Error(ferr)
-	} else {
-		log.Logger.WithFields(logrus.Fields{"func": fname, "path": fpath, "line": fline}).Info(string(buf))
+	if log.Logger != nil {
+		if ferr != nil {
+			log.Logger.WithFields(logrus.Fields{}).Error(ferr)
+		} else {
+			log.Logger.WithFields(logrus.Fields{"func": fname, "path": fpath, "line": fline}).Info(string(buf))
+		}
 	}
 
 	err = Unmarshal(copy, &target)
