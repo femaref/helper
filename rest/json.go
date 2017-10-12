@@ -24,7 +24,7 @@ func Unmarshal(buffer io.ReadCloser, target interface{}) error {
 }
 
 func EnsureUnmarshalBuffer(buffer []byte, target interface{}, required []string) error {
-	return EnsureUnmarshal(ioutil.NopCloser(bytes.NewBuffer(buf)), target, required)
+	return EnsureUnmarshal(ioutil.NopCloser(bytes.NewBuffer(buffer)), target, required)
 }
 
 func EnsureUnmarshal(buffer io.ReadCloser, target interface{}, required []string) error {
