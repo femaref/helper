@@ -1,10 +1,11 @@
 package rest
 
 import (
-    "github.com/sirupsen/logrus"
+	"net/http"
+
 	"github.com/femaref/helper"
 	"github.com/femaref/toJson"
-	"net/http"
+	"github.com/sirupsen/logrus"
 
 	"fmt"
 
@@ -33,34 +34,32 @@ func callerInfo() (string, string, string, error) {
 }
 
 func ShowError(w http.ResponseWriter, err error, code int) bool {
-    if err == nil {
-        return false
-    }
-    
-    if helper.Logger != nil {
-        fname, fpath, fline, ferr := callerInfo()
+	if err == nil {
+		return false
+	}
 
-        if ferr != nil {
-            helper.Logger.WithFields(logrus.Fields{}).Error(ferr)
-        } else {
-            helper.Logger.WithFields(logrus.Fields{"func": fname, "path": fpath, "line": fline}).Error(err)
-        }
-    }
+	if helper.Logger != nil {
+		fname, fpath, fline, ferr := callerInfo()
 
-    w.Header().Set("Content-Type", "application/json")       
-    w.WriteHeader(code)
-    if writer, ok := err.(toJson.JsonWriter); ok {
-        err := toJson.WriteToJson(w, writer)
-        if err != nil {
-            if helper.Logger != nil {
-                helper.Logger.WithFields(logrus.Fields{}).Error(err)
-            }
-        }        
-    } else {
-        toJson.WriteToJson(w, struct{ Text string }{err.Error()})
-    }
+		if ferr != nil {
+			helper.Logger.WithFields(logrus.Fields{}).Error(ferr)
+		} else {
+			helper.Logger.WithFields(logrus.Fields{"func": fname, "path": fpath, "line": fline}).Error(err)
+		}
+	}
 
-    return true
+	if writer, ok := err.(toJson.JsonWriter); ok {
+		err := toJson.WriteToJsonWithCode(w, writer, code)
+		if err != nil {
+			if helper.Logger != nil {
+				helper.Logger.WithFields(logrus.Fields{}).Error(err)
+			}
+		}
+	} else {
+		toJson.WriteToJsonWithCode(w, struct{ Text string }{err.Error()}, code)
+	}
+
+	return true
 
 }
 
