@@ -12,6 +12,15 @@ import (
 	"runtime"
 )
 
+type RestError struct {
+	Code int
+	Err  error
+}
+
+func (this RestError) Error() string {
+	return fmt.Sprintf("status %d: %v", this.Code, this.Err)
+}
+
 func callerInfo() (string, string, string, error) {
 
 	// we get the callers as uintptrs - but we just need 1
@@ -68,5 +77,8 @@ func ErrorCode(w http.ResponseWriter, code int) {
 }
 
 func ErrorWrapper(w http.ResponseWriter, err error) bool {
+	if rerr, ok := err.(RestError); ok {
+		return ShowError(w, rerr.Err, rerr.Code)
+	}
 	return ShowError(w, err, 500)
 }
