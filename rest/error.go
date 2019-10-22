@@ -58,12 +58,7 @@ func ShowError(w http.ResponseWriter, err error, code int) bool {
 	}
 
 	if helper.Raven != nil {
-		_, ferr := helper.Raven.CaptureErrorAndWait(err, nil)
-		if ferr != nil {
-			if helper.Logger != nil {
-				helper.Logger.WithFields(logrus.Fields{}).Error(ferr)
-			}
-		}
+		helper.Raven.CaptureErrorAndWait(err, nil)
 	}
 
 	if writer, ok := err.(toJson.JsonWriter); ok {
